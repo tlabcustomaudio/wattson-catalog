@@ -4,6 +4,27 @@
   "brand": "Bambu Lab",
   "model": "H2 Series",
   "code": "H2D",
+  "profile": "Idle",
+  "sources": {
+   "b004b0d212e6": {
+    "w": 0,
+    "min": 0.0,
+    "n": 1,
+    "date": "2026-09-25",
+    "avg_w": 17.9
+   }
+  },
+  "w": 0,
+  "min": 0.0,
+  "n": 1,
+  "homes": 1,
+  "avg_w": 17.9
+ },
+ {
+  "type": "3D Printer",
+  "brand": "Bambu Lab",
+  "model": "H2 Series",
+  "code": "H2D",
   "profile": "Idle/Finish",
   "sources": {
    "b004b0d212e6": {
