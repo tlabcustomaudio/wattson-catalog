@@ -4,6 +4,7 @@
 The issue body holds a ```json block with {"wattson": 1, "entries": [...]}. Each entry:
 type, brand, model, code, profile (text, all required), w (watts), min (minutes), n (times seen),
 optional kwh (energy of one full run) and avg_w (average power measured by the plug while on).
+w = 0 with avg_w: a measured-only state (standby, a lamp on) below the main meter's 150 W step.
 w is the step seen on the MAIN meter (how to recognise it); avg_w and kwh are what it really uses.
 The contributor is the issue author (hashed login): re-sending the same appliance replaces
 their own contribution instead of adding to it. No household data ever enters the catalog.
@@ -19,7 +20,13 @@ from datetime import date
 FIELDS = ("type", "brand", "model", "code", "profile")
 FP_TOL = 0.15          # same entry if power within ±15 % (same as Wattson)
 N_CAP = 20             # max weight of one contribution: nobody dominates the average by claiming a huge n
-OPTIONAL = (("kwh", 0.001, 100, 3), ("avg_w", 1, 10000, 0))   # (field, min, max, decimals)
+OPTIONAL = (("kwh", 0.001, 100, 3), ("avg_w", 0.1, 10000, 1))   # (field, min, max, decimals)
+
+
+def num(x, r):
+    """Rounded, and a plain integer when it is one (210, not 210.0)."""
+    x = round(x, r)
+    return int(x) if x == int(x) else x
 TEXT = re.compile(r"^[\w .,'&()+/\-]*$", re.UNICODE)
 
 
@@ -50,16 +57,21 @@ def check(data):
             e["w"], e["min"], e["n"] = int(v["w"]), round(float(v["min"]), 1), int(v["n"])
         except (KeyError, TypeError, ValueError):
             raise ValueError("entry %d: w/min/n missing or not numeric" % i)
-        if not (150 <= e["w"] <= 10000 and 0.1 <= e["min"] <= 1440 and 1 <= e["n"] <= 1000):
-            raise ValueError("entry %d: values out of range (w 150–10000, min 0.1–1440, n 1–1000)" % i)
+        # w = 0: a measured-only state (standby, a light on…) too small to show as a step on the main meter
+        steady = e["w"] == 0
+        if not ((steady or 150 <= e["w"] <= 10000) and (0 if steady else 0.1) <= e["min"] <= 1440
+                and 1 <= e["n"] <= 1000):
+            raise ValueError("entry %d: values out of range (w 0 or 150–10000, min 0.1–1440, n 1–1000)" % i)
         for k, lo, hi, r in OPTIONAL:
             if v.get(k) is not None:
                 try:
-                    e[k] = round(float(v[k]), r) if r else round(float(v[k]))
+                    e[k] = num(float(v[k]), r)
                 except (TypeError, ValueError):
                     raise ValueError("entry %d: %s not numeric" % (i, k))
                 if not lo <= e[k] <= hi:
                     raise ValueError("entry %d: %s out of range (%s–%s)" % (i, k, lo, hi))
+        if steady and "avg_w" not in e:
+            raise ValueError("entry %d: w = 0 needs avg_w (the measured power)" % i)
         out.append(e)
     return out
 
@@ -70,7 +82,8 @@ def key(d):
 
 def merge(catalog, entries, src, day):
     for v in entries:
-        e = next((e for e in catalog if key(e) == key(v) and abs(e["w"] - v["w"]) <= FP_TOL * e["w"]), None)
+        pw = lambda d: d["w"] or d.get("avg_w", 0)
+        e = next((e for e in catalog if key(e) == key(v) and abs(pw(e) - pw(v)) <= FP_TOL * pw(e)), None)
         if e is None:
             e = {k: v[k] for k in FIELDS}
             e["sources"] = {}
@@ -85,7 +98,7 @@ def merge(catalog, entries, src, day):
         for k, _, _, r in OPTIONAL:
             k_ = [(x[k], min(x["n"], N_CAP)) for x in s if k in x]
             if k_:
-                e[k] = round(sum(a * b for a, b in k_) / sum(b for _, b in k_), r or None)
+                e[k] = num(sum(a * b for a, b in k_) / sum(b for _, b in k_), r)
     catalog.sort(key=key)
     return catalog
 

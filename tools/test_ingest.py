@@ -42,6 +42,20 @@ try:
 except ValueError:
     pass
 
+S = dict(V, type="Light", profile="On", w=0, min=0, avg_w=9.1)       # measured-only state
+cat = ingest.merge([], ingest.check({"entries": [S]}), "a", "2026-09-26")
+assert cat[0]["w"] == 0 and cat[0]["avg_w"] == 9.1, cat
+cat = ingest.merge(cat, ingest.check({"entries": [dict(S, avg_w=9.4)]}), "b", "2026-09-26")
+assert len(cat) == 1 and cat[0]["homes"] == 2, cat
+cat = ingest.merge(cat, ingest.check({"entries": [dict(S, avg_w=60)]}), "c", "2026-09-26")   # other power: own entry
+assert len(cat) == 2
+for bad in (dict(S, avg_w=None), dict(S, w=100)):
+    try:
+        ingest.check({"entries": [bad]})
+        raise AssertionError("accepted %r" % bad)
+    except ValueError:
+        pass
+
 d = tempfile.mkdtemp()
 ev, cp = os.path.join(d, "ev.json"), os.path.join(d, "catalog.json")
 json.dump({"issue": {"user": {"login": "Someone"}, "body": body([V])}}, open(ev, "w"))

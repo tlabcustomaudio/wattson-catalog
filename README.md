@@ -15,7 +15,7 @@ Each entry says how much an appliance draws and for how long. It was measured in
 | `model` | Drymaster | |
 | `code` | DHB1260PL | product code, the most precise identifier |
 | `profile` | Laundry Dry | mode, state or program (e.g. *ABS print*, *Eco 50°*) |
-| `w` | 205 | step seen on the main meter, watts (for a program: its peak) |
+| `w` | 205 | step seen on the main meter, watts (for a program: its peak). **0** = a measured-only state (standby, a lamp on) too small for the main meter: then `avg_w` is required |
 | `min` | 120 | typical length of one block, minutes (for a program: the whole run) |
 | `kwh` | 0.25 | optional: energy of one full run, measured by the plug |
 | `avg_w` | 210 | optional: average power measured by the plug while on: what it **really** uses |
