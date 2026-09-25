@@ -1,1 +1,21 @@
-[]
+[
+ {
+  "type": "Dehumidifier",
+  "brand": "LG",
+  "model": "Drymaster",
+  "code": "DHB1260PL",
+  "profile": "Laundry Dry",
+  "sources": {
+   "b004b0d212e6": {
+    "w": 170,
+    "min": 70.1,
+    "n": 1,
+    "date": "2026-09-25"
+   }
+  },
+  "w": 170,
+  "min": 70.1,
+  "n": 1,
+  "homes": 1
+ }
+]
