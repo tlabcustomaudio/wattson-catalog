@@ -2,7 +2,7 @@
 """Unisce al catalogo un contributo arrivato come issue (lo apre Wattson, o una persona a mano).
 
 Il corpo dell'issue contiene un blocco ```json con {"wattson": 1, "voci": [...]}. Ogni voce:
-tipo, marca, modello, codice, profilo (testo), w (W), min (minuti), n (volte vista).
+tipo, marca, modello, codice, profilo (testo, tutti obbligatori), w (W), min (minuti), n (volte vista).
 Chi contribuisce è l'autore dell'issue (hash del login): rimandare lo stesso apparecchio
 sostituisce il proprio contributo, non lo somma. Nessun dato della casa entra nel catalogo.
 
@@ -40,8 +40,9 @@ def check(data):
             if len(s) > 60 or not TEXT.match(s) or re.search(r"@|https?:|www\.", s, re.I):
                 raise ValueError("voce %d: campo %s non valido" % (i, k))
             e[k] = s
-        if len(e["tipo"]) < 2:
-            raise ValueError("voce %d: manca il tipo" % i)
+        empty = [k for k in FIELDS if not e[k]]
+        if empty:   # tutti obbligatori: il catalogo vale quanto i dati che ci entrano
+            raise ValueError("voce %d: campi vuoti: %s" % (i, ", ".join(empty)))
         try:
             e["w"], e["min"], e["n"] = int(v["w"]), round(float(v["min"]), 1), int(v["n"])
         except (KeyError, TypeError, ValueError):

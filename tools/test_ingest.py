@@ -8,7 +8,7 @@ V = {"tipo": "Deumidificatore", "marca": "LG", "modello": "Drymaster", "codice":
 body = lambda voci: "Contributo\n```json\n%s\n```" % json.dumps({"wattson": 1, "voci": voci})
 
 assert ingest.check(ingest.parse(body([V])))[0]["codice"] == "DHB1260PL"
-for bad, why in ((dict(V, tipo=""), "tipo"), (dict(V, w=50), "scala"), (dict(V, marca="x@y.it"), "campo"),
+for bad, why in ((dict(V, tipo=""), "tipo"), (dict(V, codice=""), "codice"), (dict(V, profilo=" "), "profilo"), (dict(V, w=50), "scala"), (dict(V, marca="x@y.it"), "campo"),
                  (dict(V, modello="https://spam"), "campo"), (dict(V, n="tanti"), "numerici")):
     try:
         ingest.check(ingest.parse(body([bad])))

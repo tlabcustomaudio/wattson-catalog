@@ -12,7 +12,7 @@ Ogni voce dice quanto consuma un apparecchio e per quanto, misurato in una casa 
 
 | Campo | Esempio | Note |
 |---|---|---|
-| `tipo` | Deumidificatore | obbligatorio |
+| `tipo` | Deumidificatore | |
 | `marca` | LG | |
 | `modello` | Drymaster | |
 | `codice` | DHB1260PL | codice prodotto, il più preciso |
@@ -24,6 +24,8 @@ Ogni voce dice quanto consuma un apparecchio e per quanto, misurato in una casa 
 | `fonti` | | un contributo per casa, con id anonimo |
 
 Una voce è la stessa se coincidono tipo, marca, modello, codice e profilo (senza maiuscole) e la potenza è entro ±15 %. `w` e `min` sono la media dei contributi, pesata sulle volte viste (al massimo 20 per casa, così nessuno domina la media).
+
+I cinque campi di testo sono **tutti obbligatori**: una voce senza codice prodotto o senza profilo non entra.
 
 ## Privacy
 
