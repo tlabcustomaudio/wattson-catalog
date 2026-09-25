@@ -118,8 +118,9 @@ def main(event_path, catalog_path):
         json.dump(catalog, f, indent=1, ensure_ascii=False)
         f.write("\n")
     print("✅ Thanks! Merged into the catalog: %s" % "; ".join(
-        "%s · %s · %s · %s (%s) — %d W, ~%s min" % (v["type"], v["brand"], v["model"], v["code"], v["profile"],
-                                                   v["w"], v["min"]) for v in entries))
+        "%s · %s · %s · %s (%s) — %s" % (v["type"], v["brand"], v["model"], v["code"], v["profile"],
+                                         "%d W step, ~%s min" % (v["w"], v["min"]) if v["w"] else
+                                         "%s W measured, steady" % v["avg_w"]) for v in entries))
     return 0
 
 
