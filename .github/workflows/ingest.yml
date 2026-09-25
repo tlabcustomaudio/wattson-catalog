@@ -24,6 +24,8 @@ jobs:
           git config user.name "wattson-catalog[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add catalog.json
+          # the same home re-sending identical values changes nothing: that's a success, not an error
+          git diff --cached --quiet && exit 0
           git commit -m "Contribution #${{ github.event.issue.number }}"
           git push || (git pull --rebase && git push)
       - name: Reply and close
