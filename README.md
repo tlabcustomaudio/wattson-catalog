@@ -1,52 +1,50 @@
-# Wattson — catalogo delle impronte
+# Wattson — appliance fingerprint catalog
 
-Il catalogo condiviso degli elettrodomestici per [Wattson](https://github.com/tlabcustomaudio/wattson), l'investigatore dei consumi per Home Assistant.
+The shared catalog of household appliances for [Wattson](https://github.com/tlabcustomaudio/wattson), the power-usage detective for Home Assistant.
 
-Ogni voce dice quanto consuma un apparecchio e per quanto, misurato in una casa vera con una presa "profiler" e confrontato col contatore generale. Un Wattson appena installato lo usa per riconoscere subito gli apparecchi che altri hanno già misurato.
+Each entry says how much an appliance draws and for how long. It was measured in a real home with a "profiler" smart plug and cross-checked against the main meter. A freshly installed Wattson uses the catalog to recognise appliances that someone else has already measured.
 
-*English: a shared catalog of appliance power fingerprints (type · brand · model · product code · profile → watts and minutes), filled automatically by Wattson installs. Read `catalog.json`; contribute by opening an issue with the JSON block below.*
+## What it contains
 
-## Cosa contiene
+`catalog.json` is a list of entries:
 
-`catalog.json` è una lista di voci:
-
-| Campo | Esempio | Note |
+| Field | Example | Notes |
 |---|---|---|
-| `tipo` | Deumidificatore | |
-| `marca` | LG | |
-| `modello` | Drymaster | |
-| `codice` | DHB1260PL | codice prodotto, il più preciso |
-| `profilo` | Laundry Dry | modalità o stato (es. *Stampa ABS*) |
-| `w` | 205 | gradino sul contatore generale, W |
-| `min` | 120 | durata tipica di un blocco, minuti |
-| `n` | 3 | volte vista, in tutto |
-| `case` | 1 | case diverse che l'hanno misurata (più alto = più affidabile) |
-| `fonti` | | un contributo per casa, con id anonimo |
+| `type` | Dehumidifier | |
+| `brand` | LG | |
+| `model` | Drymaster | |
+| `code` | DHB1260PL | product code, the most precise identifier |
+| `profile` | Laundry Dry | mode or state (e.g. *ABS print*) |
+| `w` | 205 | step seen on the main meter, watts |
+| `min` | 120 | typical length of one block, minutes |
+| `n` | 3 | times seen, in total |
+| `homes` | 1 | how many different homes measured it (higher = more reliable) |
+| `sources` | | one contribution per home, under an anonymous id |
 
-Una voce è la stessa se coincidono tipo, marca, modello, codice e profilo (senza maiuscole) e la potenza è entro ±15 %. `w` e `min` sono la media dei contributi, pesata sulle volte viste (al massimo 20 per casa, così nessuno domina la media).
+The five text fields are **all required**: an entry without a product code or a profile is rejected.
 
-I cinque campi di testo sono **tutti obbligatori**: una voce senza codice prodotto o senza profilo non entra.
+Two contributions are the same entry when type, brand, model, code and profile match (case-insensitive) and the power is within ±15 %. `w` and `min` are the average of the contributions, weighted by how many times each home saw the appliance. Each home counts for at most 20, so nobody can dominate the average.
 
 ## Privacy
 
-Nel catalogo **non entra niente della casa**: niente nomi delle stanze o dei dispositivi, niente orari, niente indirizzi. Chi contribuisce è identificato solo da un hash del login GitHub, che serve a sostituire il proprio contributo quando lo si rimanda invece di sommarlo. L'issue con cui arriva il contributo resta pubblica, come ogni issue su GitHub.
+**Nothing about the home enters the catalog**: no room or device names, no timestamps, no addresses. A contributor is identified only by a hash of their GitHub login. The hash makes a re-sent contribution replace the previous one instead of adding to it. The issue that carries a contribution is public, like any GitHub issue.
 
-## Come si contribuisce
+## How to contribute
 
-**Con Wattson (automatico).** Nella vista *Impara* si impara un apparecchio con la presa Profiler compilando anche il **Tipo**. Se la condivisione è attiva, a fine sessione Wattson apre da solo un'issue qui, con il tuo account GitHub (lo colleghi una volta, come per HACS). La condivisione è **spenta di default**.
+**With Wattson (automatic).** In Wattson's learning view, learn an appliance with the Profiler plug, filling in all the fields. If sharing is on, Wattson opens an issue here at the end of the session, using your GitHub account. You link the account once, the same way as for HACS. Sharing is **off by default**.
 
-**A mano.** Apri un'issue con questo blocco nel testo:
+**By hand.** Open an issue with this block in the body:
 
 ````
 ```json
-{"wattson": 1, "voci": [{"tipo": "Deumidificatore", "marca": "LG", "modello": "Drymaster",
-  "codice": "DHB1260PL", "profilo": "Laundry Dry", "w": 205, "min": 120, "n": 1}]}
+{"wattson": 1, "entries": [{"type": "Dehumidifier", "brand": "LG", "model": "Drymaster",
+  "code": "DHB1260PL", "profile": "Laundry Dry", "w": 205, "min": 120, "n": 1}]}
 ```
 ````
 
-Una GitHub Action controlla il formato e i valori (w 150–10000 W, min 0,1–1440, niente link o indirizzi email), unisce il contributo a `catalog.json` e chiude l'issue. Se qualcosa non torna, l'issue resta aperta con l'etichetta `da-verificare`.
+A GitHub Action checks the format and the values: all fields present, w between 150 and 10000 W, min between 0.1 and 1440, no links or email addresses. It then merges the contribution into `catalog.json` and closes the issue. If something doesn't add up, the issue stays open with the `needs-review` label.
 
-## Sviluppo
+## Development
 
 ```bash
 python3 tools/test_ingest.py

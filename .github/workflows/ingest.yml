@@ -1,32 +1,32 @@
-name: Unisci contributo al catalogo
+name: Merge contribution into the catalog
 on:
   issues:
     types: [opened, edited, reopened]
 permissions:
   contents: write
   issues: write
-concurrency: catalog          # un contributo alla volta: niente scritture incrociate su catalog.json
+concurrency: catalog          # one contribution at a time: no concurrent writes to catalog.json
 jobs:
   ingest:
     if: contains(github.event.issue.body, '"wattson"') && github.event.issue.state == 'open'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Controlla e unisci
+      - name: Validate and merge
         id: ingest
         run: |
           set +e
           python3 tools/ingest.py "$GITHUB_EVENT_PATH" catalog.json > comment.md
           echo "rc=$?" >> "$GITHUB_OUTPUT"
-      - name: Pubblica catalog.json
+      - name: Publish catalog.json
         if: steps.ingest.outputs.rc == '0'
         run: |
           git config user.name "wattson-catalog[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add catalog.json
-          git commit -m "Contributo #${{ github.event.issue.number }}"
+          git commit -m "Contribution #${{ github.event.issue.number }}"
           git push || (git pull --rebase && git push)
-      - name: Rispondi e chiudi
+      - name: Reply and close
         env:
           GH_TOKEN: ${{ github.token }}
           N: ${{ github.event.issue.number }}
@@ -35,6 +35,6 @@ jobs:
           if [ "${{ steps.ingest.outputs.rc }}" = "0" ]; then
             gh issue close "$N" --reason completed
           else
-            gh label create da-verificare --color D93F0B --force >/dev/null
-            gh issue edit "$N" --add-label da-verificare
+            gh label create needs-review --color D93F0B --force >/dev/null
+            gh issue edit "$N" --add-label needs-review
           fi
