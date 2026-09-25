@@ -34,6 +34,8 @@ P = dict(V, profile="Eco 50", w=1900, min=125, kwh=0.95)                 # a pro
 cat = ingest.merge([], ingest.check({"entries": [P]}), "a", "2026-09-25")
 cat = ingest.merge(cat, ingest.check({"entries": [dict(P, kwh=1.05)]}), "b", "2026-09-25")
 assert cat[0]["kwh"] == 1.0 and "kwh" not in ingest.check({"entries": [V]})[0], cat
+cat = ingest.merge(cat, ingest.check({"entries": [dict(P, kwh=1.05, avg_w=480)]}), "b", "2026-09-26")   # b re-sends
+assert cat[0]["avg_w"] == 480 and cat[0]["homes"] == 2, cat
 try:
     ingest.check({"entries": [dict(P, kwh="lots")]})
     raise AssertionError("text kwh accepted")

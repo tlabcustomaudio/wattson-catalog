@@ -17,14 +17,17 @@ Each entry says how much an appliance draws and for how long. It was measured in
 | `profile` | Laundry Dry | mode, state or program (e.g. *ABS print*, *Eco 50°*) |
 | `w` | 205 | step seen on the main meter, watts (for a program: its peak) |
 | `min` | 120 | typical length of one block, minutes (for a program: the whole run) |
-| `kwh` | 0.95 | optional: energy of one run, for appliance programs |
+| `kwh` | 0.25 | optional: energy of one full run, measured by the plug |
+| `avg_w` | 210 | optional: average power measured by the plug while on: what it **really** uses |
 | `n` | 3 | times seen, in total |
 | `homes` | 1 | how many different homes measured it (higher = more reliable) |
 | `sources` | | one contribution per home, under an anonymous id |
 
+**Why `w` and `avg_w` differ.** `w` is the jump Wattson sees on the main meter, which is how it recognises the appliance. It can be lower than the real draw: a dehumidifier starts its 35 W fan first (too small to show on the main meter), then the compressor adds +170 W. So `w` = 170, while the plug measures 210 W on average. Use `w` to recognise, `avg_w` and `kwh` to know the real consumption.
+
 The five text fields are **all required**: an entry without a product code or a profile is rejected.
 
-Two contributions are the same entry when type, brand, model, code and profile match (case-insensitive) and the power is within ±15 %. `w`, `min` and `kwh` are the average of the contributions, weighted by how many times each home saw the appliance. Each home counts for at most 20, so nobody can dominate the average.
+Two contributions are the same entry when type, brand, model, code and profile match (case-insensitive) and the power is within ±15 %. `w`, `min`, `kwh` and `avg_w` are the average of the contributions, weighted by how many times each home saw the appliance. Each home counts for at most 20, so nobody can dominate the average.
 
 ## Privacy
 
