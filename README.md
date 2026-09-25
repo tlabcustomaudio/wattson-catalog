@@ -14,16 +14,17 @@ Each entry says how much an appliance draws and for how long. It was measured in
 | `brand` | LG | |
 | `model` | Drymaster | |
 | `code` | DHB1260PL | product code, the most precise identifier |
-| `profile` | Laundry Dry | mode or state (e.g. *ABS print*) |
-| `w` | 205 | step seen on the main meter, watts |
-| `min` | 120 | typical length of one block, minutes |
+| `profile` | Laundry Dry | mode, state or program (e.g. *ABS print*, *Eco 50°*) |
+| `w` | 205 | step seen on the main meter, watts (for a program: its peak) |
+| `min` | 120 | typical length of one block, minutes (for a program: the whole run) |
+| `kwh` | 0.95 | optional: energy of one run, for appliance programs |
 | `n` | 3 | times seen, in total |
 | `homes` | 1 | how many different homes measured it (higher = more reliable) |
 | `sources` | | one contribution per home, under an anonymous id |
 
 The five text fields are **all required**: an entry without a product code or a profile is rejected.
 
-Two contributions are the same entry when type, brand, model, code and profile match (case-insensitive) and the power is within ±15 %. `w` and `min` are the average of the contributions, weighted by how many times each home saw the appliance. Each home counts for at most 20, so nobody can dominate the average.
+Two contributions are the same entry when type, brand, model, code and profile match (case-insensitive) and the power is within ±15 %. `w`, `min` and `kwh` are the average of the contributions, weighted by how many times each home saw the appliance. Each home counts for at most 20, so nobody can dominate the average.
 
 ## Privacy
 

@@ -30,6 +30,16 @@ assert cat[0]["homes"] == 2 and cat[0]["w"] == round((210 * 1 + 200 * 20) / 21),
 cat = ingest.merge(cat, [dict(V, w=2000)], "a", "2026-09-27")         # different power: separate entry
 assert len(cat) == 2
 
+P = dict(V, profile="Eco 50", w=1900, min=125, kwh=0.95)                 # a program: kwh optional
+cat = ingest.merge([], ingest.check({"entries": [P]}), "a", "2026-09-25")
+cat = ingest.merge(cat, ingest.check({"entries": [dict(P, kwh=1.05)]}), "b", "2026-09-25")
+assert cat[0]["kwh"] == 1.0 and "kwh" not in ingest.check({"entries": [V]})[0], cat
+try:
+    ingest.check({"entries": [dict(P, kwh="lots")]})
+    raise AssertionError("text kwh accepted")
+except ValueError:
+    pass
+
 d = tempfile.mkdtemp()
 ev, cp = os.path.join(d, "ev.json"), os.path.join(d, "catalog.json")
 json.dump({"issue": {"user": {"login": "Someone"}, "body": body([V])}}, open(ev, "w"))

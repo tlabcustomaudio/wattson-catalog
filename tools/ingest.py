@@ -2,7 +2,8 @@
 """Merge a contribution that arrived as an issue (opened by Wattson, or by hand) into the catalog.
 
 The issue body holds a ```json block with {"wattson": 1, "entries": [...]}. Each entry:
-type, brand, model, code, profile (text, all required), w (watts), min (minutes), n (times seen).
+type, brand, model, code, profile (text, all required), w (watts), min (minutes), n (times seen),
+optional kwh (energy of one run: for appliance programs, e.g. a dishwasher's "Eco 50°").
 The contributor is the issue author (hashed login): re-sending the same appliance replaces
 their own contribution instead of adding to it. No household data ever enters the catalog.
 
@@ -49,6 +50,13 @@ def check(data):
             raise ValueError("entry %d: w/min/n missing or not numeric" % i)
         if not (150 <= e["w"] <= 10000 and 0.1 <= e["min"] <= 1440 and 1 <= e["n"] <= 1000):
             raise ValueError("entry %d: values out of range (w 150–10000, min 0.1–1440, n 1–1000)" % i)
+        if v.get("kwh") is not None:
+            try:
+                e["kwh"] = round(float(v["kwh"]), 3)
+            except (TypeError, ValueError):
+                raise ValueError("entry %d: kwh not numeric" % i)
+            if not 0.001 <= e["kwh"] <= 100:
+                raise ValueError("entry %d: kwh out of range (0.001–100)" % i)
         out.append(e)
     return out
 
@@ -64,12 +72,16 @@ def merge(catalog, entries, src, day):
             e = {k: v[k] for k in FIELDS}
             e["sources"] = {}
             catalog.append(e)
-        e["sources"][src] = {"w": v["w"], "min": v["min"], "n": v["n"], "date": day}
+        e["sources"][src] = dict({"w": v["w"], "min": v["min"], "n": v["n"], "date": day},
+                                 **({"kwh": v["kwh"]} if "kwh" in v else {}))
         s = e["sources"].values()
         wt = [min(x["n"], N_CAP) for x in s]
         e.update(w=round(sum(x["w"] * k for x, k in zip(s, wt)) / sum(wt)),
                  min=round(sum(x["min"] * k for x, k in zip(s, wt)) / sum(wt), 1),
                  n=sum(x["n"] for x in s), homes=len(e["sources"]))
+        k_ = [(x["kwh"], min(x["n"], N_CAP)) for x in s if "kwh" in x]
+        if k_:
+            e["kwh"] = round(sum(a * b for a, b in k_) / sum(b for _, b in k_), 3)
     catalog.sort(key=key)
     return catalog
 
