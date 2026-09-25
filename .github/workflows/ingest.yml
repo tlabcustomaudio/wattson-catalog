@@ -1,0 +1,40 @@
+name: Unisci contributo al catalogo
+on:
+  issues:
+    types: [opened, edited, reopened]
+permissions:
+  contents: write
+  issues: write
+concurrency: catalog          # un contributo alla volta: niente scritture incrociate su catalog.json
+jobs:
+  ingest:
+    if: contains(github.event.issue.body, '"wattson"') && github.event.issue.state == 'open'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Controlla e unisci
+        id: ingest
+        run: |
+          set +e
+          python3 tools/ingest.py "$GITHUB_EVENT_PATH" catalog.json > comment.md
+          echo "rc=$?" >> "$GITHUB_OUTPUT"
+      - name: Pubblica catalog.json
+        if: steps.ingest.outputs.rc == '0'
+        run: |
+          git config user.name "wattson-catalog[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add catalog.json
+          git commit -m "Contributo #${{ github.event.issue.number }}"
+          git push || (git pull --rebase && git push)
+      - name: Rispondi e chiudi
+        env:
+          GH_TOKEN: ${{ github.token }}
+          N: ${{ github.event.issue.number }}
+        run: |
+          gh issue comment "$N" --body-file comment.md
+          if [ "${{ steps.ingest.outputs.rc }}" = "0" ]; then
+            gh issue close "$N" --reason completed
+          else
+            gh label create da-verificare --color D93F0B --force >/dev/null
+            gh issue edit "$N" --add-label da-verificare
+          fi
