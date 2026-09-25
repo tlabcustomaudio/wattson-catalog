@@ -55,7 +55,7 @@ def check(data):
         for k, lo, hi, r in OPTIONAL:
             if v.get(k) is not None:
                 try:
-                    e[k] = round(float(v[k]), r)
+                    e[k] = round(float(v[k]), r) if r else round(float(v[k]))
                 except (TypeError, ValueError):
                     raise ValueError("entry %d: %s not numeric" % (i, k))
                 if not lo <= e[k] <= hi:
@@ -85,8 +85,7 @@ def merge(catalog, entries, src, day):
         for k, _, _, r in OPTIONAL:
             k_ = [(x[k], min(x["n"], N_CAP)) for x in s if k in x]
             if k_:
-                e[k] = round(sum(a * b for a, b in k_) / sum(b for _, b in k_), r)
-                e[k] = int(e[k]) if r == 0 else e[k]
+                e[k] = round(sum(a * b for a, b in k_) / sum(b for _, b in k_), r or None)
     catalog.sort(key=key)
     return catalog
 
