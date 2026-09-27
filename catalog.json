@@ -44,6 +44,29 @@
   "avg_w": 210
  },
  {
+  "type": "Dehumidifier",
+  "brand": "LG",
+  "model": "Drymaster",
+  "code": "DHB1660PL",
+  "profile": "Laundry Dry",
+  "sources": {
+   "b004b0d212e6": {
+    "w": 0,
+    "min": 0.0,
+    "n": 1,
+    "date": "2026-09-27",
+    "kwh": 1.71,
+    "avg_w": 213
+   }
+  },
+  "w": 0,
+  "min": 0.0,
+  "n": 1,
+  "homes": 1,
+  "kwh": 1.71,
+  "avg_w": 213
+ },
+ {
   "type": "Light",
   "brand": "Lexman",
   "model": "G9 - 4000K",
