@@ -21,6 +21,27 @@
   "avg_w": 17.9
  },
  {
+  "type": "3D Printer",
+  "brand": "Bambu Lab",
+  "model": "H2 Series",
+  "code": "H2D",
+  "profile": "Idle",
+  "sources": {
+   "b004b0d212e6": {
+    "w": 0,
+    "min": 0.0,
+    "n": 1,
+    "date": "2026-10-02",
+    "avg_w": 57.6
+   }
+  },
+  "w": 0,
+  "min": 0.0,
+  "n": 1,
+  "homes": 1,
+  "avg_w": 57.6
+ },
+ {
   "type": "Dehumidifier",
   "brand": "LG",
   "model": "Drymaster",
@@ -28,17 +49,17 @@
   "profile": "Laundry Dry",
   "sources": {
    "b004b0d212e6": {
-    "w": 170,
-    "min": 70.1,
-    "n": 1,
-    "date": "2026-09-25",
+    "w": 172,
+    "min": 87.6,
+    "n": 5,
+    "date": "2026-10-02",
     "kwh": 0.252,
     "avg_w": 210
    }
   },
-  "w": 170,
-  "min": 70.1,
-  "n": 1,
+  "w": 172,
+  "min": 87.6,
+  "n": 5,
   "homes": 1,
   "kwh": 0.252,
   "avg_w": 210
