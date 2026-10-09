@@ -27,7 +27,7 @@ def num(x, r):
     """Rounded, and a plain integer when it is one (210, not 210.0)."""
     x = round(x, r)
     return int(x) if x == int(x) else x
-TEXT = re.compile(r"^[\w .,'&()+/\-]*$", re.UNICODE)
+TEXT = re.compile(r"^[\w .,'&()+/%\-]*$", re.UNICODE)    # %: a humidity set-point is a profile ("45%")
 
 
 def parse(body):

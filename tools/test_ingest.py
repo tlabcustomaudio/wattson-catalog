@@ -30,6 +30,7 @@ assert cat[0]["homes"] == 2 and cat[0]["w"] == round((210 * 1 + 200 * 20) / 21),
 cat = ingest.merge(cat, [dict(V, w=2000)], "a", "2026-09-27")         # different power: separate entry
 assert len(cat) == 2
 
+assert ingest.check({"entries": [dict(V, profile="45%")]})[0]["profile"] == "45%"      # humidity set-point
 P = dict(V, profile="Eco 50", w=1900, min=125, kwh=0.95)                 # a program: kwh optional
 cat = ingest.merge([], ingest.check({"entries": [P]}), "a", "2026-09-25")
 cat = ingest.merge(cat, ingest.check({"entries": [dict(P, kwh=1.05)]}), "b", "2026-09-25")
