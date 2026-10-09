@@ -88,6 +88,29 @@
   "avg_w": 213
  },
  {
+  "type": "Dehumidifier",
+  "brand": "Olimpia Splendid",
+  "model": "Aquaria Slim 12",
+  "code": "O1546",
+  "profile": "45%",
+  "sources": {
+   "b004b0d212e6": {
+    "w": 199,
+    "min": 6.9,
+    "n": 3,
+    "date": "2026-10-09",
+    "kwh": 0.179,
+    "avg_w": 195
+   }
+  },
+  "w": 199,
+  "min": 6.9,
+  "n": 3,
+  "homes": 1,
+  "kwh": 0.179,
+  "avg_w": 195
+ },
+ {
   "type": "Light",
   "brand": "Lexman",
   "model": "G9 - 4000K",
