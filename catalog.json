@@ -94,16 +94,16 @@
   "sources": {
    "b004b0d212e6": {
     "w": 176,
-    "min": 96.6,
-    "n": 18,
+    "min": 97.3,
+    "n": 20,
     "date": "2026-11-14",
     "kwh": 0.252,
     "avg_w": 210
    }
   },
   "w": 176,
-  "min": 96.6,
-  "n": 18,
+  "min": 97.3,
+  "n": 20,
   "homes": 1,
   "kwh": 0.252,
   "avg_w": 210
@@ -176,6 +176,27 @@
   "homes": 1,
   "kwh": 1.048,
   "avg_w": 508
+ },
+ {
+  "type": "Freezer",
+  "brand": "Nous",
+  "model": "A7Z (Zigbee)",
+  "code": "TS011F",
+  "profile": "Compressore",
+  "sources": {
+   "b004b0d212e6": {
+    "w": 0,
+    "min": 0.0,
+    "n": 1,
+    "date": "2026-11-14",
+    "avg_w": 178.3
+   }
+  },
+  "w": 0,
+  "min": 0.0,
+  "n": 1,
+  "homes": 1,
+  "avg_w": 178.3
  },
  {
   "type": "Light",
